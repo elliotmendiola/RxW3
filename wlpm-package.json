@@ -1,0 +1,9 @@
+{
+  "title": "RxW3",
+  "author": "Elliot Mendiola / elliotmendiola@gmail.com",
+  "dependencies": {},
+  "license": "MIT",
+  "sources": [
+    "src"
+  ]
+}
