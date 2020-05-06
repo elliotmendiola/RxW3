@@ -17,6 +17,16 @@ WM('RxW3Util', function (import, export, default)
     end
     return success, result
   end
+  util.nest = function(t, path, value)
+    local child = table.remove(path, 1);
+    if #path > 0 then
+      if not t[child] then t[child] = {} end;
+      return util.nest(t[child], path, value);
+    end
+    
+    t[child] = t[child] or value;
+    return t[child];
+  end
 
   default(util)
 end);
