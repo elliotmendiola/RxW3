@@ -1,14 +1,17 @@
-WM('RxW3OperatorsSwitchMap', function (import, export, default)
+WM('RxW3OperatorsSwitch', function (import, export, default)
+    local util = import 'RxW3Util'
     local map = import 'RxW3OperatorsMap'
-    local switch = import 'RxW3OperatorsSwitch'
+    local switch = import 'RxW3OperatorSwitch'
   
-    --- Returns an Observable that produces a single value representing the sum of the values produced
-    -- by the original.
+    --- Returns a new Observable that transform the items emitted by an Observable into Observables,
+    -- then flatten the emissions from those into a single Observable
+    -- @arg {function} callback - The function to transform values from the original Observable.
     -- @returns {Observable}
     default(function (callback)
-      return function (self)
-        return self:pipe(map(callback), switch())
-      end
-    end)
-  end);
+      callback = callback or util.identity
   
+      return function (self)
+        return self:pipe(map(callback), switch());
+      end
+    end);
+  end);

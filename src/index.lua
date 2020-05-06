@@ -70,4 +70,7 @@ WM('RxW3', function (import, export, default)
     export('Operators/Window', import('RxW3Operators', 'Window'));
     export('Operators/With', import('RxW3Operators', 'With'));
     export('Operators/Zip', import('RxW3Operators', 'Zip'));
+    export('Events/AnyUnit', import('RxW3Events', 'AnyUnit'));
+    export('Events/Death', import('RxW3Events', 'Death'));
+    export('Events/DialogButton', import('RxW3Events', 'DialogButton'));
 end)

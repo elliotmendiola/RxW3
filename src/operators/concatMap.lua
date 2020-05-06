@@ -2,8 +2,9 @@ WM('RxW3OperatorsExhaust', function (import, export, default)
     local Observable = import 'RxW3Observable'
     local map = import 'RxW3OperatorsMap'
   
-    --- Given an Observable that produces Observables, returns an Observable that produces the values
-    -- produced by the last produced Observable while none was subscribed to.
+    --- Returns a new Observable that transform the items emitted by an Observable into Observables,
+    -- then concats the emissions from those into a single Observable
+    -- @arg {function} callback - The function to transform values from the original Observable.
     -- @returns {Observable}
     default(function (callback)
       return function (self)

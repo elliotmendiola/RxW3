@@ -18,11 +18,11 @@ WM('RxW3SchedulersTimeoutScheduler', function (import, export, default)
   -- @arg {number=0} delay - The delay, in milliseconds.
   -- @returns {Subscription}
   function TimeoutScheduler:schedule(action, delay, ...)
-    local timer = require 'timer'
-    local subscription
-    local handle = timer.setTimeout(delay, action, ...)
+    local timer = CreateTimer();
+
+    TimerStart(timer, delay, false, action);
     return Subscription.create(function()
-      timer.clearTimeout(handle)
+      DestroyTimer(timer);
     end)
   end
 

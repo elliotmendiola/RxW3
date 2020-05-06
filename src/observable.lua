@@ -1,11 +1,13 @@
 WM('RxW3Observable', function (import, export, default)
-  local util = import 'util'
+  local util = import 'RxW3Util'
+  local events = import 'RxW3Events'
 
   --- @class Observable
   -- @description Observables push values to Observers.
   local Observable = {}
   Observable.__index = Observable
   Observable.__tostring = util.constant('Observable')
+  Observable.__triggers = {};
 
   --- Creates a new Observable.
   -- @arg {function} subscribe - The subscription function that produces values.
@@ -62,6 +64,41 @@ WM('RxW3Observable', function (import, export, default)
 
       observer:onCompleted()
     end)
+  end
+
+  --- Creates an Observable that produces emissions when an event is fired, each emission should include all event arguments.
+  -- @arg {string} type - The event type
+  -- @arg {...} additional arguments - Any additional arguments an event may take, IE: Unit event type for AnyUnit event observable
+  -- @returns {Observable}
+  function Observable.fromEvent(type, ...)
+    local path = util.pack(...);
+    if (not util.nest(Observable.__triggers[type], path, nil)) then
+      local wrapper = util.nest(Observable.__triggers[type], path, { ['trigger'] = CreateTrigger(), ['observers'] = {} });
+      events[type].init(wrapper.trigger);
+      TriggerAddCondition(wrapper.trigger, function ()
+        local args = {};
+        local timer = CreateTimer()
+        local observer = 0;
+
+        for x = 0, #events[type].args, 1 do
+          args[x] = events[type].args[x]();
+        end
+
+        -- In Lua (and most other languages too) the minimum interval is 4ms.
+        -- Here we asyncronously emit to each observable from this event
+        TimerStart(timer, 0.004, true, function ()
+          wrapper.observers[observer]:onNext(args);
+          observer = observer + 1;
+          if not wrapper.observers[observer] then
+            DestroyTimer(timer);
+          end
+        end);
+      end)
+    end
+    return Observable.create(function (observer)
+      table.insert(util.nest(Observable.__triggers[type], path, nil).observers, observer);
+      -- Insert this observer into the list of observer to asyncronously dispatch emissions to
+    end);
   end
 
   --- Creates an Observable that produces a range of values in a manner similar to a Lua for loop.
